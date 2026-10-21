@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>SerenityReader - Settings</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      margin-top: 0;
+      color: #333;
+      font-size: 28px;
+    }
+    .setting-group {
+      margin-bottom: 28px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .setting-group:last-child {
+      border-bottom: none;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #555;
+    }
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    input[type="number"]:focus,
+    select:focus {
+      outline: none;
+      border-color: #4CAF50;
+    }
+    .range-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    input[type="range"] {
+      flex: 1;
+    }
+    .range-value {
+      min-width: 60px;
+      text-align: right;
+      font-weight: 600;
+      color: #333;
+    }
+    .theme-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .theme-option {
+      padding: 20px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+    .theme-option:hover {
+      border-color: #4CAF50;
+    }
+    .theme-option.selected {
+      border-color: #4CAF50;
+      background: #e8f5e9;
+    }
+    .theme-option.light {
+      background: #fafafa;
+      color: #333;
+    }
+    .theme-option.dark {
+      background: #1a1a1a;
+      color: #e0e0e0;
+    }
+    .theme-option.sepia {
+      background: #f4ecd8;
+      color: #5b4636;
+    }
+    .buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 32px;
+    }
+    button {
+      flex: 1;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    #save {
+      background: #4CAF50;
+      color: white;
+    }
+    #save:hover {
+      background: #45a049;
+    }
+    #reset {
+      background: #757575;
+      color: white;
+    }
+    #reset:hover {
+      background: #616161;
+    }
+    .status {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 6px;
+      text-align: center;
+      display: none;
+    }
+    .status.show {
+      display: block;
+    }
+    .status.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    .help-text {
+      font-size: 13px;
+      color: #757575;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧘 SerenityReader Settings</h1>
+
+    <div class="setting-group">
+      <label>Font Size</label>
+      <div class="range-group">
+        <input type="range" id="fontSize" min="12" max="28" value="18" step="1">
+        <span class="range-value" id="fontSizeValue">18px</span>
+      </div>
+      <p class="help-text">Adjust the text size in reader view</p>
+    </div>
+
+    <div class="setting-group">
+      <label>Font Family</label>
+      <select id="fontFamily">
+        <option value="Georgia, 'Times New Roman', serif">Georgia (Serif)</option>
+        <option value="'Arial', 'Helvetica', sans-serif">Arial (Sans-serif)</option>
+        <option value="'Verdana', sans-serif">Verdana</option>
+        <option value="'Merriweather', Georgia, serif">Merriweather</option>
+        <option value="'Open Sans', sans-serif">Open Sans</option>
+        <option value="'Roboto', sans-serif">Roboto</option>
+      </select>
+      <p class="help-text">Choose your preferred reading font</p>
+    </div>
+
+    <div class="setting-group">
+      <label>Line Height</label>
+      <div class="range-group">
+        <input type="range" id="lineHeight" min="1.2" max="2.0" value="1.6" step="0.1">
+        <span class="range-value" id="lineHeightValue">1.6</span>
+      </div>
+      <p class="help-text">Adjust spacing between lines</p>
+    </div>
+
+    <div class="setting-group">
+      <label>Content Width</label>
+      <div class="range-group">
+        <input type="range" id="maxWidth" min="500" max="1000" value="700" step="50">
+        <span class="range-value" id="maxWidthValue">700px</span>
+      </div>
+      <p class="help-text">Maximum width of the reading content</p>
+    </div>
+
+    <div class="setting-group">
+      <label>Color Theme</label>
+      <div class="theme-options">
+        <div class="theme-option light" data-theme="light">
+          <div>Light</div>
+        </div>
+        <div class="theme-option dark" data-theme="dark">
+          <div>Dark</div>
+        </div>
+        <div class="theme-option sepia" data-theme="sepia">
+          <div>Sepia</div>
+        </div>
+      </div>
+      <p class="help-text">Choose your preferred color scheme</p>
+    </div>
+
+    <div class="buttons">
+      <button id="save">Save Settings</button>
+      <button id="reset">Reset to Defaults</button>
+    </div>
+
+    <div id="status" class="status"></div>
+  </div>
+
+  <script src="js/options.js"></script>
+</body>
+</html>

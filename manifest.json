@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "SerenityReader",
+  "version": "1.0.0",
+  "description": "Your peaceful reading companion - remove ads and enable customizable reader view with one click",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["js/content.js"],
+      "css": ["css/reader.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "options_page": "options.html"
+}

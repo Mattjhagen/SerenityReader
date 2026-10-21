@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      width: 300px;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+    }
+    h2 {
+      margin: 0 0 16px 0;
+      font-size: 18px;
+      color: #333;
+    }
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    button {
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      font-weight: 500;
+    }
+    #toggleReader {
+      background-color: #4CAF50;
+      color: white;
+    }
+    #toggleReader:hover {
+      background-color: #45a049;
+    }
+    #toggleReader.active {
+      background-color: #ff9800;
+    }
+    #removeAds {
+      background-color: #2196F3;
+      color: white;
+    }
+    #removeAds:hover {
+      background-color: #0b7dda;
+    }
+    #openSettings {
+      background-color: #757575;
+      color: white;
+    }
+    #openSettings:hover {
+      background-color: #616161;
+    }
+    .status {
+      margin-top: 12px;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      text-align: center;
+      display: none;
+    }
+    .status.show {
+      display: block;
+    }
+    .status.success {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+    }
+    .status.info {
+      background-color: #e3f2fd;
+      color: #1565c0;
+    }
+  </style>
+</head>
+<body>
+  <h2>🧘 SerenityReader</h2>
+  <div class="button-group">
+    <button id="toggleReader">Enable Reader View</button>
+    <button id="removeAds">Remove Ads</button>
+    <button id="openSettings">Settings</button>
+  </div>
+  <div id="status" class="status"></div>
+  <script src="js/popup.js"></script>
+</body>
+</html>
