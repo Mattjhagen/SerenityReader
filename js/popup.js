@@ -84,6 +84,13 @@ function toggleReaderMode() {
     const settings = JSON.parse(localStorage.getItem('readerSettings') || '{}');
 
     const article = extractMainContent();
+
+    if (!article.html || article.html.trim().length < 100) {
+      alert('Unable to extract readable content from this page. Try a different page or article.');
+      document.body.classList.remove('reader-mode-active');
+      return;
+    }
+
     const readerContainer = document.createElement('div');
     readerContainer.id = 'reader-mode-container';
     readerContainer.innerHTML = `
@@ -97,53 +104,128 @@ function toggleReaderMode() {
 
     document.body.appendChild(readerContainer);
 
+    // Prevent body scroll when reader is active
+    document.body.style.overflow = 'hidden';
+
     document.getElementById('reader-close').addEventListener('click', () => {
       document.body.classList.remove('reader-mode-active');
+      document.body.style.overflow = '';
       readerContainer.remove();
     });
 
     applyReaderSettings(settings);
+
+    // Ensure container is scrollable
+    readerContainer.scrollTop = 0;
   } else {
     const container = document.getElementById('reader-mode-container');
-    if (container) container.remove();
+    if (container) {
+      document.body.style.overflow = '';
+      container.remove();
+    }
   }
 }
 
 function extractMainContent() {
+  // Try to find the main article content
   const contentSelectors = [
+    'article[class*="article"]',
     'article',
+    '[class*="article-body"]',
+    '[class*="article-content"]',
+    '[class*="post-content"]',
+    '[class*="entry-content"]',
+    '[role="main"] article',
+    'main article',
     '[role="main"]',
     'main',
-    '.post-content',
-    '.article-content',
-    '.entry-content',
-    '#content',
-    '.content'
+    '#article',
+    '.article',
+    '#content article',
+    '.content article'
   ];
 
   let mainContent = null;
+  let bestScore = 0;
+
+  // Score each potential content container
   for (const selector of contentSelectors) {
-    mainContent = document.querySelector(selector);
-    if (mainContent) break;
+    const elements = document.querySelectorAll(selector);
+    elements.forEach(element => {
+      const text = element.textContent || '';
+      const textLength = text.trim().length;
+      const paragraphs = element.querySelectorAll('p').length;
+
+      // Score based on text length and number of paragraphs
+      const score = textLength + (paragraphs * 100);
+
+      if (score > bestScore) {
+        bestScore = score;
+        mainContent = element;
+      }
+    });
+    if (mainContent && bestScore > 1000) break;
+  }
+
+  // Fallback: find the element with the most paragraph text
+  if (!mainContent || bestScore < 500) {
+    const allElements = document.querySelectorAll('div, section, article');
+    allElements.forEach(element => {
+      const text = element.textContent || '';
+      const textLength = text.trim().length;
+      const paragraphs = element.querySelectorAll('p').length;
+      const score = textLength + (paragraphs * 100);
+
+      if (score > bestScore && textLength > 500) {
+        bestScore = score;
+        mainContent = element;
+      }
+    });
   }
 
   if (!mainContent) {
-    mainContent = document.body;
+    return { title: document.title, html: '' };
   }
 
   const clone = mainContent.cloneNode(true);
 
+  // Remove unwanted elements
   const unwantedSelectors = [
-    'script', 'style', 'nav', 'header', 'footer',
-    'aside', '.ad', '.ads', '.advertisement',
-    '.social-share', '.comments', '.related-posts'
+    'script', 'style', 'iframe', 'nav', 'header', 'footer',
+    'aside', '[role="navigation"]', '[role="banner"]', '[role="complementary"]',
+    '.ad', '.ads', '.advertisement', '[class*="ad-"]', '[id*="ad-"]',
+    '.social-share', '.share-buttons', '[class*="share"]',
+    '.comments', '.comment-section', '[class*="comment"]',
+    '.related-posts', '.recommended', '[class*="related"]',
+    '.sidebar', '.widget', '[class*="sidebar"]',
+    'button', 'form', 'input', 'select', 'textarea',
+    '[class*="popup"]', '[class*="modal"]', '[class*="overlay"]',
+    '[aria-hidden="true"]', '[style*="display: none"]', '[style*="visibility: hidden"]'
   ];
 
   unwantedSelectors.forEach(selector => {
-    clone.querySelectorAll(selector).forEach(el => el.remove());
+    try {
+      clone.querySelectorAll(selector).forEach(el => el.remove());
+    } catch (e) {
+      // Ignore invalid selectors
+    }
   });
 
-  const title = document.querySelector('h1')?.textContent || document.title;
+  // Remove empty elements
+  clone.querySelectorAll('div, span, section').forEach(el => {
+    if (!el.textContent.trim() && !el.querySelector('img')) {
+      el.remove();
+    }
+  });
+
+  // Get title - try multiple methods
+  const title =
+    document.querySelector('h1[class*="title"]')?.textContent ||
+    document.querySelector('h1[class*="headline"]')?.textContent ||
+    document.querySelector('h1')?.textContent ||
+    document.querySelector('[property="og:title"]')?.getAttribute('content') ||
+    document.querySelector('[name="twitter:title"]')?.getAttribute('content') ||
+    document.title.split(' - ')[0].split(' | ')[0];
 
   return {
     title,
